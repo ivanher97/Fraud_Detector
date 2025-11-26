@@ -47,9 +47,8 @@ DO UPDATE SET count = EXCLUDED.count;
 """
 
 ├── src/
-│   ├── producer.py            # Generates fake traffic to Kafka
-│   ├── detector.py            # Spark Streaming Logic + JDBC Upsert
-│   └── postgresql-42.7.8.jar  # Shared configurations
-├── docker-compose.yml           # Infrastructure (Zookeeper, Kafka, Spark, Postgres, Grafana)
-├── requirements.txt             # Python dependencies
-└── README.md                    # Project Documentation
+│   ├── producer.py           
+│   ├── detector.py            
+│   └── postgresql-42.7.8.jar  
+├── docker-compose.yml           
+└── README.md                    
