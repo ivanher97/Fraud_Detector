@@ -1,4 +1,4 @@
-# Real-Time Fraud Detection Pipeline 🕵️‍♂️💸
+# Real-Time Fraud Detection Pipeline 
 
 ![Spark](https://img.shields.io/badge/Apache_Spark-Streaming-orange?style=flat-square&logo=apachespark)
 ![Kafka](https://img.shields.io/badge/Confluent_Kafka-7.5-black?style=flat-square&logo=apachekafka)
