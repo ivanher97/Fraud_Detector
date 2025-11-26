@@ -1,0 +1,25 @@
+# --- Big Data & Spark Garbage ---
+metastore_db/
+spark-warehouse/
+derby.log
+checkpoint/
+checkpoints/
+*/checkpoint/
+*/checkpoints/
+
+# --- Python Garbage ---
+__pycache__/
+*.py[cod]
+.env
+.venv
+env/
+venv/
+
+# --- Jupyter Garbage ---
+.ipynb_checkpoints/
+
+# --- IDE & OS Garbage (Windows/Linux) ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,78 @@
+services:
+  # SERVICIO 1: SPARK (Tu cliente)
+  spark:
+    container_name: spark-client
+    image: jupyter/pyspark-notebook:spark-3.5.0
+    working_dir: /home/jovyan/work
+    ports:
+      - "8888:8888"
+      - "4040:4040"
+    volumes:
+      - "./workspace:/home/jovyan/work"
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+    depends_on:
+      - kafka
+
+  # SERVICIO 2: ZOOKEEPER (Confluent Style)
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  # SERVICIO 3: KAFKA (Confluent Style)
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka
+    hostname: kafka
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      # --- CONFIGURACIÓN DE RED ---
+      # Definimos dos protocolos: PLAINTEXT (interno) y PLAINTEXT_HOST (externo)
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      # ADVERTISED_LISTENERS: Cómo se presenta Kafka al mundo
+      # 1. A otros contenedores (como Spark) les dice: "Soy kafka:29092"
+      # 2. A tu host (Windows) le dice: "Soy localhost:9092"
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      # LISTENERS: En qué interfaces escucha realmente
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092,PLAINTEXT_HOST://0.0.0.0:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      # --- FIN CONFIGURACIÓN DE RED ---
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  postgres:
+    image: postgres:13-alpine 
+    container_name: fraud-postgres
+    ports:
+      - "5432:5432"  # Puerto estándar expuesto a Windows
+    environment:
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=fraud_detection
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Persistencia real en disco
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: unless-stopped
+    environment:
+      # increases the log level from info to debug
+      - GF_LOG_LEVEL=debug
+    ports:
+      - '3000:3000'
+    volumes:
+      - 'grafana_storage:/var/lib/grafana'
+
+volumes:
+  postgres_data:
+  grafana_storage: {}
